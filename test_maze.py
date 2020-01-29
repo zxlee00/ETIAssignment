@@ -14,6 +14,10 @@ def test_invalidMainMenuOptionTriggersValidation(capfd):
     mainMenuSelection("5")
     out, err = capfd.readouterr()
     assert 'Invalid input, please select the correct selection.' in out
+
+def test_readingLoadingMaze():
+    dataInFile, totalLineNo, outputString = ReadMazeInfoFromFile("maze.csv")
+    assert "Number of lines read: " + str(totalLineNo) in outputString
     
     
 
