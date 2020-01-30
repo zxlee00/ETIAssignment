@@ -18,6 +18,13 @@ def test_invalidMainMenuOptionTriggersValidation(capfd):
 def test_readingLoadingMaze():
     dataInFile, totalLineNo, outputString = ReadMazeInfoFromFile("maze.csv")
     assert "Number of lines read: " + str(totalLineNo) in outputString
+
+def test_viewingMaze():
+    dataInFile, totalLineNo, outputString = ReadMazeInfoFromFile("maze.csv")
+    outputString = ViewMaze(dataInFile)
+    assert "Please load a maze first!" not in outputString
+    assert "'X'" in outputString
+    assert "'O'" in outputString
     
     
 
