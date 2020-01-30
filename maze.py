@@ -10,6 +10,7 @@ from datetime import datetime
 import time
 from time import strptime
 import sys
+import os.path
 
 #######################################D#######I########A#########N######### SelectionMenu ####I#############Z##############Z################A##############T#############I########
 #listing the menu in a list
@@ -45,6 +46,11 @@ def mainMenuSelection(selectedOption):
         print()
         print('Option 1: ', SelectionMenu[0])
 
+        fileName = str(input('Enter the name of the data file: '))
+        global dataInFile
+        dataInFile, totalLineNo, outputString = ReadMazeInfoFromFile(fileName)
+        print(outputString)
+
     elif selectedOption == "2":
         print()
         print('Option 2: ' + SelectionMenu[1])
@@ -63,6 +69,34 @@ def mainMenuSelection(selectedOption):
     else:
         ErrorMessage()
 
+#######################################D#######I########A#########N######### Option 1 ####I#############Z##############Z################A##############T#############I##############
+def ReadMazeInfoFromFile(fileName): 
+
+    #need: Read the total number of lines in
+    os.path.isfile("./")
+    #print (filepath)
+
+    count = 0
+    dataInFile = []
+    totalLineNo = 0
+    if os.path.exists(fileName):
+         with open(fileName, 'r') as csvfile:
+            for theNoOfLine in csvfile:
+                firstLine = theNoOfLine.strip('\n')
+                read = firstLine.split(',')
+                dataInFile.append(read)
+                count = count + 1
+            
+                totalLineNo = count
+                outputString = "Number of lines read: {}".format(totalLineNo)
+        
+            csvfile.close()
+        
+    else:
+        outputString = "The <" + fileName + ">" + " file name is not found, please enter again."
+        
+    return dataInFile, totalLineNo, outputString
+
 #######################################D#######I########A#########N######### Option 0 ####I#############Z##############Z################A##############T#############I##############
 def Exit():
     print()
@@ -72,15 +106,12 @@ def Exit():
 
 #######################################D#######I########A#########N######### No Option ####I#############Z##############Z################A##############T#############I##############
 def ErrorMessage():
-    #global selectedOption
-    #if selectedOption != None:
     print()
     print('Invalid input, please select the correct selection.')
 
 if __name__ == '__main__':
     displayMainMenu()
 
-                
                 
             
 
