@@ -20,7 +20,7 @@ SelectionMenu = ['Read and load maze from file',
               'Configure current maze',
              'Exit Maze']
 Maze = []
-dataInFile = None
+dataInFile = []
 exitGame = False
 
 def menusOfMaze(SelectionMenu):
@@ -54,6 +54,8 @@ def mainMenuSelection(selectedOption):
     elif selectedOption == "2":
         print()
         print('Option 2: ' + SelectionMenu[1])
+        outputString = ViewMaze(dataInFile)
+        print(outputString)
 
     elif selectedOption == "3":
         print()
@@ -96,6 +98,17 @@ def ReadMazeInfoFromFile(fileName):
         outputString = "The <" + fileName + ">" + " file name is not found, please enter again."
         
     return dataInFile, totalLineNo, outputString
+
+#######################################Z#######H########I################### Option 2 ##################X##############U################A##############N############################
+def ViewMaze(maze):
+    outputString = ""
+    if (maze != []):
+        for i in maze:
+            outputString += str(i) + "\n"  
+    else:
+        outputString = "Please load a maze first!"
+        
+    return outputString
 
 #######################################D#######I########A#########N######### Option 0 ####I#############Z##############Z################A##############T#############I##############
 def Exit():
