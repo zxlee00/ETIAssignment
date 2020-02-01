@@ -25,6 +25,27 @@ def test_viewingMaze():
     assert "Please load a maze first!" not in outputString
     assert "'X'" in outputString
     assert "'O'" in outputString
-    
+
+def test_validInputPlayMaze():
+    maze, totalLineNo, outputString = ReadMazeInfoFromFile("maze unchanged.csv")
+    outputString, updatedMaze = movementKeySelection(maze, "S")
+    assert "You have moved down." in outputString
+    assert updatedMaze[2][6] == "A"
+    assert updatedMaze[1][6] == "O"
+
+def test_invalidInputPlayMaze():
+    maze, totalLineNo, outputString = ReadMazeInfoFromFile("maze unchanged.csv")
+    outputString, updatedMaze = movementKeySelection(maze, "W")
+    assert "Invalid movement. Please try again." in outputString
+    assert maze == updatedMaze
+    outputString, updatedMaze = movementKeySelection(maze, "A")
+    assert "Invalid movement. Please try again." in outputString
+    assert maze == updatedMaze
+    outputString, updatedMaze = movementKeySelection(maze, "D")
+    assert "Invalid movement. Please try again." in outputString
+    assert maze == updatedMaze
+    outputString, updatedMaze = movementKeySelection(maze, "TEST")
+    assert "Invalid input. Please try again." in outputString
+    assert maze == updatedMaze
     
 
