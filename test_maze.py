@@ -33,6 +33,12 @@ def test_validInputPlayMaze():
     assert updatedMaze[2][6] == "A"
     assert updatedMaze[1][6] == "O"
 
+def test_returnToMainMenuWhilePlayingMaze(capfd):
+    maze, totalLineNo, outputString = ReadMazeInfoFromFile("maze unchanged.csv")
+    outputString, updatedMaze = movementKeySelection(maze, "M")
+    out, err = capfd.readouterr()
+    assert 'MAIN MENU' in out
+
 def test_invalidInputPlayMaze():
     maze, totalLineNo, outputString = ReadMazeInfoFromFile("maze unchanged.csv")
     outputString, updatedMaze = movementKeySelection(maze, "W")
