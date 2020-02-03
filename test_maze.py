@@ -47,5 +47,35 @@ def test_invalidInputPlayMaze():
     outputString, updatedMaze = movementKeySelection(maze, "TEST")
     assert "Invalid input. Please try again." in outputString
     assert maze == updatedMaze
+
+def test_viewConfigurationMenu(capfd):
+    configuremenu()
+    out, err = capfd.readouterr()
+    assert "[1] Create Wall" in out
+
+def test_createWall():
+    originalMaze, totalLineNo, outputString = ReadMazeInfoFromFile("maze.csv")
+    updatedMaze = ConfigureMaze(originalMaze,"1",2,2)
+    configuredMaze, totalLineNo, outputString = ReadMazeInfoFromFile("mazeconfigured.csv")
+    assert configuredMaze[1][1] == "X"
+
+def test_createPassage():
+    originalMaze, totalLineNo, outputString = ReadMazeInfoFromFile("maze.csv")
+    updatedMaze = ConfigureMaze(originalMaze,"2",3,2)
+    configuredMaze, totalLineNo, outputString = ReadMazeInfoFromFile("mazeconfigured.csv")
+    assert configuredMaze[2][1] == "O"
     
+def test_createStart():
+    originalMaze, totalLineNo, outputString = ReadMazeInfoFromFile("maze.csv")
+    updatedMaze = ConfigureMaze(originalMaze,"3",1,7)
+    configuredMaze, totalLineNo, outputString = ReadMazeInfoFromFile("mazeconfigured.csv")
+    assert configuredMaze[0][6] == "A"
+    
+def test_createEnd():
+    originalMaze, totalLineNo, outputString = ReadMazeInfoFromFile("maze.csv")
+    updatedMaze = ConfigureMaze(originalMaze,"4",8,3)
+    configuredMaze, totalLineNo, outputString = ReadMazeInfoFromFile("mazeconfigured.csv")
+    assert configuredMaze[7][2] == "B"
+
+
 
