@@ -12,7 +12,7 @@ from time import strptime
 import sys
 import os.path
 import copy
-
+import numpy
 
 #######################################D#######I########A#########N######### SelectionMenu ####I#############Z##############Z################A##############T#############I########
 #listing the menu in a list
@@ -43,6 +43,8 @@ def displayMainMenu():
     mainMenuSelection(selection)
     if exitGame == False:
         displayMainMenu()
+    else:
+        sys.exit()
 
 def displayGamePlayMenu(playmaze):
     outputString = ""
@@ -55,9 +57,9 @@ def displayGamePlayMenu(playmaze):
             col = 0
             while col < len(playmaze[row]):
                 if (playmaze[row][col] == "A"):
-                    startLocation = "(Row " + str(row) + ", Column " + str(col) + ")"
+                    startLocation = "(Row " + str(row + 1) + ", Column " + str(col + 1) + ")"
                 if (playmaze[row][col] == "B"):
-                    endLocation = "(Row " + str(row) + ", Column " + str(col) + ")"
+                    endLocation = "(Row " + str(row + 1) + ", Column " + str(col + 1) + ")"
                 col += 1
             row += 1
             
@@ -124,7 +126,8 @@ def mainMenuSelection(selectedOption):
     elif selectedOption == "4":
         print()
         print('Option 4: ' + SelectionMenu[3])
-        ConfigureMaze()
+        
+        ConfigureMazeInput()
 
     elif selectedOption == "0":
         Exit()
@@ -132,24 +135,19 @@ def mainMenuSelection(selectedOption):
     else:
         ErrorMessage()
 
-#######################################D#######I########A#########N######### ConfigureMenu ####I#############Z##############Z################A##############T#############I########
 def configuremenu():
     menulist = ["[1] Create Wall", \
             "[2] Create Passageway", \
             "[3] Create start point", \
             "[4] Create end point", \
-            "[5] Exit to main menu"]
+            "\n[0] Exit to main menu"]
     
     for i in range(len(menulist)):
         print(menulist[i]) #print menulist using loop
-        
-#going back to main menu from configure manu
-def menu(mainmenulist):
-    print("MAIN MENU")
-    print("="*9)
-    
-    for i in range(len(mainmenulist)):
-        print(mainmenulist[i])
+
+    print()
+    menuoption = input('Enter your options: ')
+    return menuoption
 
 #check for Startpoint
 def findaxisa():
@@ -185,7 +183,6 @@ def mazesize(coordinate): #check if configuremaze is within range of the maze si
         return False
     else:
         return True
-    
 
 #######################################D#######I########A#########N######### GamePlay Menu ####I#############Z##############Z################A##############T#############I##############
 def movementKeySelection(playmaze, movementKey):
@@ -245,8 +242,6 @@ def movementKeySelection(playmaze, movementKey):
 
     return outputString, playmaze
 
-
-    
 #######################################D#######I########A#########N######### Option 1 ####I#############Z##############Z################A##############T#############I##############
 def ReadMazeInfoFromFile(fileName): 
 
@@ -275,11 +270,52 @@ def ReadMazeInfoFromFile(fileName):
         
     return dataInFile, totalLineNo, outputString
 
-def correct_maze(): #print out maze in memory
-    for line in dataInFile:
-        print(line)
+def ConfigureMazeInput():
+    print('='*41) #print = 41 times
+    print()
+    outputString = ViewMaze(dataInFile)
+    print(outputString)
 
-        
+    if outputString != "Please load a maze first!":
+        print()
+        print('Configuration Menu')
+        print('='*16) #print = 16 times
+        menuoption = configuremenu()
+        if menuoption == "0":
+            displayMainMenu()
+        elif menuoption == "1" or menuoption == "2" or menuoption == "3" or menuoption == "4":
+            print()
+            checkConfigureMenuSelection(menuoption)
+            ConfigureMazeInput()
+        else:
+            print("\nPlease enter a valid menu option.\n")
+            ConfigureMazeInput()
+    else:
+        displayMainMenu()
+
+def checkConfigureMenuSelection(menuoption):
+    print("Enter the coordinate of the item you wish to change E.g Row,Column")
+    print("'B' to return to Configure menu.")
+    coordinate = input("'M' to return to Main Menu: ").upper()
+    if coordinate == "M":
+        displayMainMenu()
+    elif coordinate == "B":
+        print()
+        ConfigureMazeInput()
+    else:
+        coordinate = coordinate.split(",")
+        if (len(coordinate)) != 2 or (coordinate[1] == ""):
+            print("\nPlease enter a valid coordinate!\n")
+            checkConfigureMenuSelection(menuoption)
+        else:       
+            y = int(coordinate[0])
+            x = int(coordinate[1])
+            if (y < 0 or y > len(dataInFile) or x < 0 or x > len(dataInFile[0])):
+                print("\nPlease enter a valid coordinate!\n")
+                checkConfigureMenuSelection(menuoption)
+            else:
+                configuredMaze = ConfigureMaze(dataInFile, menuoption, y, x)
+
 #######################################Z#######H########I################### Option 2 ##################X##############U################A##############N############################
 def ViewMaze(maze):
     outputString = ""
@@ -291,170 +327,47 @@ def ViewMaze(maze):
         
     return outputString
 
+def ConfigureMaze(maze, menuoption, y, x):
+                 
+    if menuoption == "1":
+        if maze[y-1][x-1] != "A" and maze[y-1][x-1] != "B":
+            maze[y-1][x-1] = "X"
+        else:
+            print("\nThe coordinate you have entered is a start point or end point.")
+            print("Please choose another coordinate or set the start point or end point to another location first.\n")
+            checkConfigureMenuSelection(menuoption)
 
-#######################################D#######I########A#########N######### Option 0 ####I#############Z##############Z################A##############T#############I##############
-#def maze():
-#    for i in Maze:
-#        print(i)
+    if menuoption == "2":
+        if maze[y-1][x-1] != "A" and maze[y-1][x-1] != "B":
+            maze[y-1][x-1] = "O"
+        else:
+            print("\nThe coordinate you have entered is a start point or end point.")
+            print("Please choose another coordinate or set the start point or end point to another location first.\n")
+            checkConfigureMenuSelection(menuoption)
 
-def ConfigureMaze():
+    if menuoption == "3":
+        ya, xa = findaxisa()
+        if ya != -1 and xa != -1:
+            if maze[y-1][x-1] != "A" and maze[y-1][x-1] != "B":
+                maze[xa][ya] = "O"
+                maze[y-1][x-1] = "A"
+        else:
+            maze[y-1][x-1] = "A"
 
-    print('='*41) #print = 41 times
-    print()
-    correct_maze()
-    menuoption = None #define no value at all
-    coordinate = None #define no value at all
+    if menuoption == "4":
+        yb, xb = findaxisb()
+        if yb != -1 and xb != -1:
+            if maze[y-1][x-1] != "A" and maze[y-1][x-1] != "B":
+                maze[xb][yb] = "O"
+                maze[y-1][x-1] = "B"
+        else:
+            maze[y-1][x-1] = "B"
 
-    if dataInFile == []:
-        print('Please load or create a new maze before configuring') #to check if the user have load the maze
-        print()
-    else:
-        while menuoption != 5 and coordinate != 'M':
-            print()
-            print('Configuration Menu')
-            print('='*16) #print = 16 times
-            configuremenu()
-            print()
-            menuoption = int(input('Enter your options: '))
-            if menuoption < 0 or menuoption > 5: #validate if menuoption within 1 to 5
-                print('Please enter a valid option from 1 to 5')
-                print()
-                correct_maze()
-                print()
-                
-            else:
-                print()
-                while True:
-                    if menuoption == 1: #create a wall
-                        print()
-                        
-                        while True: #this is to validate if the number entered is within maze range
-                            print("Enter the coordinate of the item you wish to change E.g Row,Column")
-                            print("'B' to return to Configure menu.")
-                            coordinate = input("'M' to return to Main Menu: ").upper()
-                            
-                            if mazesize(coordinate.split(',')) == True:
-                            
-                                break
-                            correct_maze()
-                            
-                            print('Please enter a valid coordinate within the maze')
-                            print()
-                             
-                        if coordinate != "B" and coordinate != "M":
-                            coordinate = coordinate.split(",")
-                            y = int(coordinate[0])
-                            x = int(coordinate[1])
-                            if dataInFile[y-1][x-1] != "A" and dataInFile[y-1][x-1] != "B":
-                                dataInFile[y-1][x-1] = "X"
-                            else:
-                                print("Please enter a valid input")
-                        elif coordinate == "M":
-                            break
-                        elif coordinate == "B":
-                            correct_maze()
-                            break
+    a = numpy.asarray(maze)
+    numpy.savetxt("mazeconfigured.csv", a, delimiter=",", fmt='%s')
+    print("\nSaved to 'mazeconfigured.csv'!\n")
 
-                    if menuoption == 2:
-                        print()
-                        while True: #this is to validate if the number entered is within maze range
-                            print("Enter the coordinate of the item you wish to change E.g Row,Column")
-                            print("'B' to return to Configure menu.")
-                            coordinate = input("'M' to return to Main Menu: ").upper()
-                            
-                            if mazesize(coordinate.split(',')) == True:
-                            
-                                break
-                            correct_maze()
-                            print('Please enter a valid coordinate within the maze')
-                            print()
-                        if coordinate != "B" and coordinate != "M": 
-                            coordinate = coordinate.split(",")
-                            y = int(coordinate[0])
-                            x = int(coordinate[1])
-                            if dataInFile[y-1][x-1] != "A" and dataInFile[y-1][x-1] != "B":
-                                dataInFile[y-1][x-1] = "O"
-                            else:
-                                print("Please Enter A Valid Input")
-                        elif coordinate == "M":
-                            break
-                        elif coordinate == "B":
-                            correct_maze()
-                            break
-
-                    if menuoption == 3:
-                        while True: #this is to validate if the number entered is within maze range
-                            print("Enter the coordinate of the item you wish to change E.g Row,Column")
-                            print("'B' to return to Configure menu.")
-                            coordinate = input("'M' to return to Main Menu: ").upper()
-                            
-                            if mazesize(coordinate.split(',')) == True:
-                            
-                                break
-                            correct_maze()
-                            print('Please enter a valid coordinate within the maze')
-                            print()
-                            
-                        if coordinate != "B" and coordinate != "M":
-                            coordinate = coordinate.split(",")
-                            y = int(coordinate[0])
-                            x = int(coordinate[1])
-                            ya, xa = findaxisa()
-                            if ya != -1 and xa != -1:
-                                if dataInFile[y-1][x-1] != "A" and dataInFile[y-1][x-1] != "B":
-                                    dataInFile[xa][ya] = "X"
-                                    dataInFile[y-1][x-1] = "A"
-                                else:
-                                    break
-                            else:
-                                dataInFile[y-1][x-1] = "A"
-                                
-                        elif coordinate == "M":
-                            break
-                        elif coordinate == "B":
-                            correct_maze()
-                            break
-
-
-
-                    if menuoption == 4:
-                        while True: #this is to validate if the number entered is within maze range
-                            print("Enter the coordinate of the item you wish to change E.g Row,Column")
-                            print("'B' to return to Configure menu.")
-                            coordinate = input("'M' to return to Main Menu: ").upper()
-                            
-                            if mazesize(coordinate.split(',')) == True:
-                            
-                                break
-                            correct_maze()
-                            print('Please enter a valid coordinate within the maze')
-                            print()
-                            
-                        if coordinate != "B" and coordinate != "M":
-                            coordinate = coordinate.split(",")
-                            y = int(coordinate[0])
-                            x = int(coordinate[1])
-                            yb, xb = findaxisb()
-                            if yb != -1 and xb != -1:
-                                if dataInFile[y-1][x-1] != "A" and dataInFile[y-1][x-1] != "B":
-                                    dataInFile[xb][yb] = "X"
-                                    dataInFile[y-1][x-1] = "B"
-                                else:
-                                    break
-                            else:
-                                dataInFile[y-1][x-1] = "B"
-                                
-                        elif coordinate == "M":
-                            break
-                        elif coordinate == "B":
-                            correct_maze()
-                            break
-
-                    if menuoption == 5:
-                        break
-
-                    correct_maze()
-
+    return maze
 
 #######################################D#######I########A#########N######### Option 0 ####I#############Z##############Z################A##############T#############I##############
 def Exit():
