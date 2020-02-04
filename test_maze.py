@@ -48,11 +48,6 @@ def test_invalidInputPlayMaze():
     assert "Invalid input. Please try again." in outputString
     assert maze == updatedMaze
 
-def test_viewConfigurationMenu(capfd):
-    configuremenu()
-    out, err = capfd.readouterr()
-    assert "[1] Create Wall" in out
-
 def test_createWall():
     originalMaze, totalLineNo, outputString = ReadMazeInfoFromFile("maze.csv")
     updatedMaze = ConfigureMaze(originalMaze,"1",2,2)
